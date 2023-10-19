@@ -2,24 +2,27 @@ const BASE_URL = 'http://numbersapi.com'
 
 
 // 1.
-axios.get(`${BASE_URL}/2?json`)
-    .then(res => {
-        console.log(res.data.text);
-    });
+async function favNumFact(num){
+    let res = await axios.get(`${BASE_URL}/${num}?json`);
+    console.log(res.data.text);
+}
 
 
 // 2.
-axios.get(`${BASE_URL}/2,5,15?json`)
-    .then(res => {
-        console.log(res.data);
-    });
+async function multiNumFact(numArr){
+    let res = await axios.get(`${BASE_URL}/${numArr}?json`);
+    console.log(res.data);
+}
 
 
 // 3.
-Promise.all(
-    Array.from({length: 4}, () => {
-        return axios.get(`${BASE_URL}/2?json`);
-    })
-).then(facts => {
-    facts.forEach(res => $('body').append(`<p>${res.data.text}</p>`));
-});
+let $form = $('form');
+
+$form.on('submit', async function(e){
+    e.preventDefault();
+    let num = $('#fav-num').val();
+    let res = await Promise.all(
+        Array.from({length: 4}, () => axios.get(`${BASE_URL}/${num}?json`))
+    );
+    res.forEach(facts => $('#fact-area').append(`<p>${facts.data.text}</p>`));
+})
