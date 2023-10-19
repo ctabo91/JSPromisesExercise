@@ -1,0 +1,29 @@
+body {
+    text-align: center;
+    margin: 50px;
+    background-image: linear-gradient(to right, rgb(6, 184, 6), rgb(106, 177, 142), rgb(6, 184, 6));
+}
+
+button {
+    padding: 10px;
+    border-radius: 5px;
+    margin: 0 auto;
+    background-color: rgb(192, 62, 62);
+    color: rgb(255, 255, 255);
+    font-size: large;
+}
+
+button:hover {
+    background-color: rgb(219, 116, 116);
+}
+
+#card-area {
+    margin-top: 80px;
+}
+
+#card-area > img {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
