@@ -2,52 +2,51 @@ const BASE_URL = 'https://deckofcardsapi.com/api/deck'
 
 
 // 1.
-axios.get(`${BASE_URL}/new/draw/?count=1`)
-    .then(res => {
-        console.log(`${res.data.cards[0].value} of ${res.data.cards[0].suit}`);
-    });
+async function shuffleAndDraw(){
+    let res = await axios.get(`${BASE_URL}/new/draw/`);
+    let {suit, value} = res.data.cards[0];
+    console.log(`${value} of ${suit}`);
+}
+
+shuffleAndDraw();
 
 
 // 2.
-let card1 = null;
-axios.get(`${BASE_URL}/new/draw/?count=1`)
-    .then(res => {
-        card1 = `${res.data.cards[0].value} of ${res.data.cards[0].suit}`;
-        return axios.get(`${BASE_URL}/${res.data.deck_id}/draw/?count=1`)
-    })
-    .then(res => {
-        let card2 = `${res.data.cards[0].value} of ${res.data.cards[0].suit}`;
-        console.log(card1);
-        console.log(card2);
+async function drawSameDeck(){
+    let card1Res = await axios.get(`${BASE_URL}/new/draw/`);
+    let card2Res = await axios.get(`${BASE_URL}/${card1Res.data.deck_id}/draw/`);
+    [card1Res, card2Res].forEach(card => {
+        let {suit, value} = card.data.cards[0];
+        console.log(`${value} of ${suit}`);
     });
+}
+
+drawSameDeck();
 
 
 // 3.
-let deckId = null;
-let $btn = $('button');
-let $cardArea = $('#card-area');
+async function draw(){
+    let $btn = $('button');
+    let $cardArea = $('#card-area');
 
-axios.get(`${BASE_URL}/new/shuffle`)
-    .then(res => {
-        deckId = res.data.deck_id;
-        $btn.show();
+    let deckRes = await axios.get(`${BASE_URL}/new/shuffle`);
+    deckId = deckRes.data.deck_id;
+    $btn.show().on('click', async function() {
+        let cardRes = await axios.get(`${BASE_URL}/${deckId}/draw/`);
+        let cardImg = cardRes.data.cards[0].image;
+        let angle = Math.random() * 90 - 45;
+        let randomX = Math.random() * 40 - 20;
+        let randomY = Math.random() * 40 - 20;
+        $cardArea.append(
+            $('<img>', {
+                src: cardImg,
+                css: {
+                    transform: `translate(${randomX}px, ${randomY}px) rotate(${angle}deg)`
+                }
+            })
+        );
+        if(cardRes.data.remaining === 0) $btn.remove();
     });
+}
 
-$btn.on('click', function() {
-    axios.get(`${BASE_URL}/${deckId}/draw/`)
-        .then(res => {
-            let cardImg = res.data.cards[0].image;
-            let angle = Math.random() * 90 - 45;
-            let randomX = Math.random() * 40 - 20;
-            let randomY = Math.random() * 40 - 20;
-            $cardArea.append(
-                $('<img>', {
-                    src: cardImg,
-                    css: {
-                        transform: `translate(${randomX}px, ${randomY}px) rotate(${angle}deg)`
-                    }
-                })
-            );
-            if(res.data.remaining === 0) $btn.remove();
-        });
-});
+draw();
