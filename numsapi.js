@@ -7,12 +7,16 @@ async function favNumFact(num){
     console.log(res.data.text);
 }
 
+favNumFact(2);
+
 
 // 2.
 async function multiNumFact(numArr){
     let res = await axios.get(`${BASE_URL}/${numArr}?json`);
     console.log(res.data);
 }
+
+multiNumFact([2, 5, 10]);
 
 
 // 3.
